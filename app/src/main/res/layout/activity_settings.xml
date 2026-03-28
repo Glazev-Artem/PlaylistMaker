@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_back"
+            android:src="@drawable/ic_arrow_back_24"
             app:tint="@color/black1" />
 
         <TextView
@@ -33,6 +33,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_item_height"
+        android:layout_marginTop="@dimen/margin_24"
         android:paddingHorizontal="@dimen/padding_16">
 
         <TextView
@@ -68,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/settings_icon_size"
             android:layout_gravity="center_vertical|end"
-            android:src="@drawable/ic_share"
+            android:src="@drawable/ic_share_24"
             app:tint="@color/gray" />
     </FrameLayout>
 
@@ -89,7 +90,7 @@
             android:layout_width="@dimen/settings_icon_size"
             android:layout_height="@dimen/settings_icon_size"
             android:layout_gravity="center_vertical|end"
-            android:src="@drawable/ic_support"
+            android:src="@drawable/ic_support_24"
             app:tint="@color/gray" />
     </FrameLayout>
 
@@ -110,7 +111,7 @@
             android:layout_width="@dimen/settings_icon_size"
             android:layout_height="@dimen/settings_icon_size"
             android:layout_gravity="center_vertical|end"
-            android:src="@drawable/ic_arrow_forward"
+            android:src="@drawable/ic_arrow_forward_24"
             app:tint="@color/gray" />
     </FrameLayout>
 
