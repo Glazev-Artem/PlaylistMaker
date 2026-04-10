@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="mainBackgroundColor" format="color" />
+    <attr name="settingsBackgroundColor" format="color" />
+    <attr name="buttonBackgroundColor" format="color" />
+    <attr name="buttonTextColor" format="color" />
+    <attr name="mainHeaderTextColor" format="color" />
+    <attr name="settingsHeaderTextColor" format="color" />
+    <attr name="settingsItemTextColor" format="color" />
+    <attr name="settingsIconTint" format="color" />
+
+    <attr name="searchFieldBackgroundColor" format="color" />
+    <attr name="searchFieldIconTint" format="color" />
+    <attr name="searchFieldTextColor" format="color" />
+    <attr name="searchFieldHintColor" format="color" />
+    <attr name="searchFieldClearIconTint" format="color" />
+</resources>

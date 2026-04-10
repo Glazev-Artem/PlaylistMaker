@@ -1,7 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/black1</item>
+        <item name="android:windowBackground">@color/black1</item>
+
+        <!-- Атрибуты, зависящие от темы (Ночной режим) -->
+        <item name="mainBackgroundColor">@color/black1</item>
+        <item name="settingsBackgroundColor">@color/black1</item>
+        <item name="buttonBackgroundColor">@color/white</item>
+        <item name="buttonTextColor">@color/black1</item>
+        <item name="mainHeaderTextColor">@color/white</item>
+        <item name="settingsHeaderTextColor">@color/white</item>
+        <item name="settingsItemTextColor">@color/white</item>
+        <item name="settingsIconTint">@color/white</item>
+
+        <item name="searchFieldBackgroundColor">@color/white</item>
+        <item name="searchFieldIconTint">@color/black1</item>
+        <item name="searchFieldTextColor">@color/black1</item>
+        <item name="searchFieldHintColor">@color/black1</item>
+        <item name="searchFieldClearIconTint">@color/gray</item>
     </style>
 </resources>
