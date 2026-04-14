@@ -17,6 +17,6 @@
         <item name="searchFieldIconTint">@color/black1</item>
         <item name="searchFieldTextColor">@color/black1</item>
         <item name="searchFieldHintColor">@color/black1</item>
-        <item name="searchFieldClearIconTint">@color/gray</item>
+        <item name="searchFieldClearIconTint">@color/black1</item>
     </style>
 </resources>
