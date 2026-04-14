@@ -1,8 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/blue</item>
+        <item name="android:windowBackground">@color/white</item>
+
+        <!-- Атрибуты, зависящие от темы -->
+        <item name="mainBackgroundColor">@color/blue</item>
+        <item name="settingsBackgroundColor">@color/white</item>
+        <item name="buttonBackgroundColor">@color/white</item>
+        <item name="buttonTextColor">@color/black1</item>
+        <item name="mainHeaderTextColor">@color/white</item>
+        <item name="settingsHeaderTextColor">@color/black1</item>
+        <item name="settingsItemTextColor">@color/black</item>
+        <item name="settingsIconTint">@color/gray</item>
+
+        <item name="searchFieldBackgroundColor">@color/light_gray</item>
+        <item name="searchFieldIconTint">@color/gray</item>
+        <item name="searchFieldTextColor">@color/black</item>
+        <item name="searchFieldHintColor">@color/gray</item>
+        <item name="searchFieldClearIconTint">@color/gray</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />

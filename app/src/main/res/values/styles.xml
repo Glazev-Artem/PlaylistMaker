@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Стиль для кнопок на Главном экране -->
+    <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginTop">@dimen/margin_16</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">?attr/buttonTextColor</item>
+        <item name="android:textSize">@dimen/text_size_button</item>
+        <item name="backgroundTint">?attr/buttonBackgroundColor</item>
+        <item name="cornerRadius">@dimen/button_corner_radius</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/button_icon_padding</item>
+        <item name="iconTint">?attr/buttonTextColor</item>
+        <item name="elevation">0dp</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <!-- Стиль для контейнеров пунктов в настройках -->
+    <style name="SettingsItemLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/settings_item_height</item>
+        <item name="android:paddingHorizontal">@dimen/padding_16</item>
+    </style>
+
+    <!-- Стиль для текста в пунктах настроек -->
+    <style name="SettingsItemTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical|start</item>
+        <item name="android:textColor">?attr/settingsItemTextColor</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <!-- Стиль для иконок в настройках -->
+    <style name="SettingsIconStyle">
+        <item name="android:layout_width">@dimen/settings_icon_size</item>
+        <item name="android:layout_height">@dimen/settings_icon_size</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="tint">?attr/settingsIconTint</item>
+    </style>
+
+    <!-- Стиль для заголовков экранов -->
+    <style name="HeaderTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_size_header</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+</resources>
