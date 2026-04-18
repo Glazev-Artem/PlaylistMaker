@@ -18,6 +18,8 @@
     <dimen name="settings_icon_size">24dp</dimen>
     <dimen name="settings_iconswitch_size">56dp</dimen>
     <dimen name="text_size">16sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="text_size_11">11sp</dimen>
 
     <dimen name="search_edit_text_height">36dp</dimen>
     <dimen name="search_edit_text_radius">8dp</dimen>
