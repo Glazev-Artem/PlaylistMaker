@@ -14,4 +14,8 @@
     <attr name="searchFieldTextColor" format="color" />
     <attr name="searchFieldHintColor" format="color" />
     <attr name="searchFieldClearIconTint" format="color" />
+
+    <attr name="nothingFoundImage" format="reference" />
+    <attr name="noInternetImage" format="reference" />
+    <attr name="refreshButtonDrawable" format="reference" />
 </resources>
