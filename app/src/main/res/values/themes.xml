@@ -18,6 +18,10 @@
         <item name="searchFieldTextColor">@color/black</item>
         <item name="searchFieldHintColor">@color/gray</item>
         <item name="searchFieldClearIconTint">@color/gray</item>
+
+        <item name="nothingFoundImage">@drawable/search_light_mode</item>
+        <item name="noInternetImage">@drawable/no_inet_light_mode</item>
+        <item name="refreshButtonDrawable">@drawable/button_light</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
