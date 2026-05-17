@@ -22,6 +22,7 @@
         <item name="nothingFoundImage">@drawable/search_light_mode</item>
         <item name="noInternetImage">@drawable/no_inet_light_mode</item>
         <item name="refreshButtonDrawable">@drawable/button_light</item>
+        <item name="clearHistoryButtonDrawable">@drawable/button_clearhistory_light</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />
