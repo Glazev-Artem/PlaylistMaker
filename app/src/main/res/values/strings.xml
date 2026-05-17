@@ -18,4 +18,8 @@
 
     <string name="search_hint">Поиск</string>
     <string name="header_search">Поиск</string>
+
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="something_went_wrong">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="refresh">Обновить</string>
 </resources>
