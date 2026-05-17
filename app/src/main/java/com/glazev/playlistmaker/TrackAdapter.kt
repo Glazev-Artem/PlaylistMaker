@@ -20,9 +20,9 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val artwork: ImageView = itemView.findViewById(R.id.artwork)
 
     fun bind(track: Track) {
-        trackName.text = track.trackName
-        artistName.text = track.artistName
-        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        trackName.text = track.trackName ?: ""
+        artistName.text = track.artistName ?: ""
+        trackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis ?: 0L)
 
         Glide.with(itemView)
             .load(track.artworkUrl100)
@@ -41,7 +41,8 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 }
 
 class TrackAdapter(
-    private val tracks: List<Track>
+    private val tracks: List<Track>,
+    private val onItemClickListener: ((Track) -> Unit)? = null
 ) : RecyclerView.Adapter<TrackViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -50,7 +51,11 @@ class TrackAdapter(
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(tracks[position])
+        val track = tracks[position]
+        holder.bind(track)
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.invoke(track)
+        }
     }
 
     override fun getItemCount(): Int = tracks.size
