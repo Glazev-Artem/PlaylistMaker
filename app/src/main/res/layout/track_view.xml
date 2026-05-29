@@ -6,7 +6,8 @@
     android:layout_height="61dp"
     android:orientation="horizontal"
     android:paddingHorizontal="13dp"
-    android:paddingVertical="8dp">
+    android:paddingVertical="8dp"
+    android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/artwork"

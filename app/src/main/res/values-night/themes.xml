@@ -22,5 +22,6 @@
         <item name="nothingFoundImage">@drawable/search_dark_mode</item>
         <item name="noInternetImage">@drawable/no_inet_dark_mode</item>
         <item name="refreshButtonDrawable">@drawable/button_black</item>
+        <item name="clearHistoryButtonDrawable">@drawable/button_clearhistory_black</item>
     </style>
 </resources>

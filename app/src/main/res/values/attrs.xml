@@ -18,4 +18,5 @@
     <attr name="nothingFoundImage" format="reference" />
     <attr name="noInternetImage" format="reference" />
     <attr name="refreshButtonDrawable" format="reference" />
+    <attr name="clearHistoryButtonDrawable" format="reference" />
 </resources>
