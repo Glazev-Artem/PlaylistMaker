@@ -23,6 +23,8 @@
         <item name="noInternetImage">@drawable/no_inet_light_mode</item>
         <item name="refreshButtonDrawable">@drawable/button_light</item>
         <item name="clearHistoryButtonDrawable">@drawable/button_clearhistory_light</item>
+        <item name="playButtonDrawable">@drawable/button__play_light</item>
+        <item name="pauseButtonDrawable">@drawable/button__pause_light</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker" />

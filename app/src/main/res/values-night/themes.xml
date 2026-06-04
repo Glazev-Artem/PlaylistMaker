@@ -23,5 +23,7 @@
         <item name="noInternetImage">@drawable/no_inet_dark_mode</item>
         <item name="refreshButtonDrawable">@drawable/button_black</item>
         <item name="clearHistoryButtonDrawable">@drawable/button_clearhistory_black</item>
+        <item name="playButtonDrawable">@drawable/button__play_dark</item>
+        <item name="pauseButtonDrawable">@drawable/button__pause_dark</item>
     </style>
 </resources>

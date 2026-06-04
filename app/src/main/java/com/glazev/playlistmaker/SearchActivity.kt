@@ -1,6 +1,7 @@
 package com.glazev.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,12 +37,14 @@ class SearchActivity : AppCompatActivity() {
     private val tracks = mutableListOf<Track>()
     private val trackAdapter = TrackAdapter(tracks) {
         searchHistory.add(it)
+        openPlayer(it)
     }
 
     private val historyTracks = mutableListOf<Track>()
     private val historyAdapter = TrackAdapter(historyTracks) {
         searchHistory.add(it)
         refreshHistory()
+        openPlayer(it)
     }
 
     private lateinit var searchHistory: SearchHistory
@@ -152,6 +156,12 @@ class SearchActivity : AppCompatActivity() {
         historyTracks.clear()
         historyTracks.addAll(searchHistory.get())
         historyAdapter.notifyDataSetChanged()
+    }
+
+    private fun openPlayer(track: Track) {
+        val intent = Intent(this, AudioPlayerActivity::class.java)
+        intent.putExtra(AudioPlayerActivity.EXTRA_TRACK, Gson().toJson(track))
+        startActivity(intent)
     }
 
     private fun searchRequest() {
