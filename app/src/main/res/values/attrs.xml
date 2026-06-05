@@ -19,4 +19,6 @@
     <attr name="noInternetImage" format="reference" />
     <attr name="refreshButtonDrawable" format="reference" />
     <attr name="clearHistoryButtonDrawable" format="reference" />
+    <attr name="playButtonDrawable" format="reference" />
+    <attr name="pauseButtonDrawable" format="reference" />
 </resources>
