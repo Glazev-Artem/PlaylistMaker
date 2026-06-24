@@ -1,6 +1,9 @@
 package com.glazev.playlistmaker
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -25,6 +28,19 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var playbackTime: TextView
     private lateinit var albumGroup: androidx.constraintlayout.widget.Group
     private lateinit var yearGroup: androidx.constraintlayout.widget.Group
+    private lateinit var playButton: ImageView
+
+    private var mediaPlayer = MediaPlayer()
+    private var playerState = STATE_DEFAULT
+    private var mainThreadHandler = Handler(Looper.getMainLooper())
+    private val updatePlaybackTimeRunnable = object : Runnable {
+        override fun run() {
+            if (playerState == STATE_PLAYING) {
+                playbackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                mainThreadHandler.postDelayed(this, REFRESH_PLAYBACK_TIME_DELAY_MS)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,15 +58,82 @@ class AudioPlayerActivity : AppCompatActivity() {
         playbackTime = findViewById(R.id.playback_time)
         albumGroup = findViewById(R.id.album_group)
         yearGroup = findViewById(R.id.year_group)
+        playButton = findViewById(R.id.play_button)
+        playButton.isEnabled = false
 
         val trackJson = intent.getStringExtra(EXTRA_TRACK)
         val track = Gson().fromJson(trackJson, Track::class.java)
 
         bind(track)
+        preparePlayer(track.previewUrl)
 
         backButton.setOnClickListener {
             finish()
         }
+
+        playButton.setOnClickListener {
+            playbackControl()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+        mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)
+    }
+
+    private fun preparePlayer(previewUrl: String?) {
+        if (previewUrl == null) return
+        mediaPlayer.setDataSource(previewUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            playButton.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playButton.setImageResource(getDrawableResId(R.attr.playButtonDrawable))
+            playerState = STATE_PREPARED
+            mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)
+            playbackTime.text = INITIAL_PLAYBACK_TIME
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playButton.setImageResource(getDrawableResId(R.attr.pauseButtonDrawable))
+        playerState = STATE_PLAYING
+        mainThreadHandler.post(updatePlaybackTimeRunnable)
+    }
+
+    private fun pausePlayer() {
+        if (playerState == STATE_PLAYING) {
+            mediaPlayer.pause()
+            playButton.setImageResource(getDrawableResId(R.attr.playButtonDrawable))
+            playerState = STATE_PAUSED
+            mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)
+        }
+    }
+
+    private fun playbackControl() {
+        when (playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+    private fun getDrawableResId(attrId: Int): Int {
+        val typedValue = android.util.TypedValue()
+        theme.resolveAttribute(attrId, typedValue, true)
+        return typedValue.resourceId
     }
 
     private fun bind(track: Track) {
@@ -74,7 +157,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         genreValue.text = track.primaryGenreName
         countryValue.text = track.country
-        playbackTime.text = "0:00" // Initial value as per requirements for now
+        playbackTime.text = INITIAL_PLAYBACK_TIME
 
         Glide.with(this)
             .load(track.getCoverArtwork())
@@ -93,5 +176,11 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TRACK = "extra_track"
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val REFRESH_PLAYBACK_TIME_DELAY_MS = 300L
+        private const val INITIAL_PLAYBACK_TIME = "00:00"
     }
 }

@@ -22,6 +22,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 import android.widget.ScrollView
+import android.widget.ProgressBar
+import android.os.Handler
+import android.os.Looper
 
 class SearchActivity : AppCompatActivity() {
 
@@ -34,17 +37,25 @@ class SearchActivity : AppCompatActivity() {
 
     private val iTunesService = retrofit.create(ITunesApi::class.java)
 
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchRequest() }
+
     private val tracks = mutableListOf<Track>()
     private val trackAdapter = TrackAdapter(tracks) {
-        searchHistory.add(it)
-        openPlayer(it)
+        if (clickDebounce()) {
+            searchHistory.add(it)
+            openPlayer(it)
+        }
     }
 
     private val historyTracks = mutableListOf<Track>()
     private val historyAdapter = TrackAdapter(historyTracks) {
-        searchHistory.add(it)
-        refreshHistory()
-        openPlayer(it)
+        if (clickDebounce()) {
+            searchHistory.add(it)
+            refreshHistory()
+            openPlayer(it)
+        }
     }
 
     private lateinit var searchHistory: SearchHistory
@@ -58,6 +69,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyLayout: ScrollView
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +88,7 @@ class SearchActivity : AppCompatActivity() {
         historyLayout = findViewById(R.id.history_layout)
         historyRecyclerView = findViewById(R.id.history_recycler_view)
         clearHistoryButton = findViewById(R.id.clear_history_button)
+        progressBar = findViewById(R.id.progressBar)
 
         recyclerView.adapter = trackAdapter
         historyRecyclerView.adapter = historyAdapter
@@ -139,6 +152,9 @@ class SearchActivity : AppCompatActivity() {
                 if (s?.isNotEmpty() == true) {
                     placeholderNothingFound.visibility = View.GONE
                     placeholderError.visibility = View.GONE
+                    searchDebounce()
+                } else {
+                    handler.removeCallbacks(searchRunnable)
                 }
             }
 
@@ -166,12 +182,14 @@ class SearchActivity : AppCompatActivity() {
 
     private fun searchRequest() {
         if (inputEditText.text.isNotEmpty()) {
-            // Скрываем старые результаты и ошибки перед новым запросом
             placeholderNothingFound.visibility = View.GONE
             placeholderError.visibility = View.GONE
+            recyclerView.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
             
             iTunesService.search(inputEditText.text.toString()).enqueue(object : Callback<TracksResponse> {
                 override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
+                    progressBar.visibility = View.GONE
                     if (response.isSuccessful) {
                         tracks.clear()
                         val results = response.body()?.results
@@ -188,10 +206,25 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
                     showError()
                 }
             })
         }
+    }
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun showSearchResults() {
@@ -238,5 +271,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val ITUNES_BASE_URL = "https://itunes.apple.com"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
