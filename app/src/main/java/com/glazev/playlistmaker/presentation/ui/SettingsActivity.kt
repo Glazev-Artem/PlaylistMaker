@@ -1,4 +1,4 @@
-package com.glazev.playlistmaker
+package com.glazev.playlistmaker.presentation.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.glazev.playlistmaker.R
+import com.glazev.playlistmaker.App
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {

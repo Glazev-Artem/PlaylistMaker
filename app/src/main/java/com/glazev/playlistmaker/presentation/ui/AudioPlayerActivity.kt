@@ -1,6 +1,5 @@
-package com.glazev.playlistmaker
+package com.glazev.playlistmaker.presentation.ui
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +9,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.glazev.playlistmaker.R
+import com.glazev.playlistmaker.creator.Creator
+import com.glazev.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -30,13 +32,13 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var yearGroup: androidx.constraintlayout.widget.Group
     private lateinit var playButton: ImageView
 
-    private var mediaPlayer = MediaPlayer()
+    private val playerInteractor = Creator.providePlayerInteractor()
     private var playerState = STATE_DEFAULT
     private var mainThreadHandler = Handler(Looper.getMainLooper())
     private val updatePlaybackTimeRunnable = object : Runnable {
         override fun run() {
             if (playerState == STATE_PLAYING) {
-                playbackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                playbackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(playerInteractor.getCurrentPosition())
                 mainThreadHandler.postDelayed(this, REFRESH_PLAYBACK_TIME_DELAY_MS)
             }
         }
@@ -83,28 +85,29 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        playerInteractor.releasePlayer()
         mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)
     }
 
     private fun preparePlayer(previewUrl: String?) {
         if (previewUrl == null) return
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playButton.isEnabled = true
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            playButton.setImageResource(getDrawableResId(R.attr.playButtonDrawable))
-            playerState = STATE_PREPARED
-            mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)
-            playbackTime.text = INITIAL_PLAYBACK_TIME
-        }
+        playerInteractor.preparePlayer(
+            previewUrl,
+            onPrepared = {
+                playButton.isEnabled = true
+                playerState = STATE_PREPARED
+            },
+            onCompletion = {
+                playButton.setImageResource(getDrawableResId(R.attr.playButtonDrawable))
+                playerState = STATE_PREPARED
+                mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)
+                playbackTime.text = INITIAL_PLAYBACK_TIME
+            }
+        )
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
+        playerInteractor.startPlayer()
         playButton.setImageResource(getDrawableResId(R.attr.pauseButtonDrawable))
         playerState = STATE_PLAYING
         mainThreadHandler.post(updatePlaybackTimeRunnable)
@@ -112,7 +115,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private fun pausePlayer() {
         if (playerState == STATE_PLAYING) {
-            mediaPlayer.pause()
+            playerInteractor.pausePlayer()
             playButton.setImageResource(getDrawableResId(R.attr.playButtonDrawable))
             playerState = STATE_PAUSED
             mainThreadHandler.removeCallbacks(updatePlaybackTimeRunnable)

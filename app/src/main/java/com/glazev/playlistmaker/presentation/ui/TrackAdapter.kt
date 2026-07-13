@@ -1,4 +1,4 @@
-package com.glazev.playlistmaker
+package com.glazev.playlistmaker.presentation.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.glazev.playlistmaker.R
+import com.glazev.playlistmaker.domain.models.Track
 
 import java.text.SimpleDateFormat
 import java.util.Locale
