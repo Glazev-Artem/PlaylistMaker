@@ -3,10 +3,10 @@ package com.glazev.playlistmaker.data.repository
 import android.media.MediaPlayer
 import com.glazev.playlistmaker.domain.api.PlayerRepository
 
-class PlayerRepositoryImpl : PlayerRepository {
-    private var mediaPlayer = MediaPlayer()
+class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : PlayerRepository {
 
     override fun preparePlayer(previewUrl: String, onPrepared: () -> Unit, onCompletion: () -> Unit) {
+        mediaPlayer.reset()
         mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {

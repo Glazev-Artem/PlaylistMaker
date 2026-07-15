@@ -6,13 +6,16 @@ import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.glazev.playlistmaker.R
 import com.glazev.playlistmaker.creator.Creator
 import com.glazev.playlistmaker.domain.models.Track
-import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -46,7 +49,25 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_audio_player)
+
+        val playerRoot = findViewById<View>(R.id.player_root)
+        val paddingLeft = playerRoot.paddingLeft
+        val paddingTop = playerRoot.paddingTop
+        val paddingRight = playerRoot.paddingRight
+        val paddingBottom = playerRoot.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(playerRoot) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(
+                left = paddingLeft + systemBars.left,
+                top = paddingTop + systemBars.top,
+                right = paddingRight + systemBars.right,
+                bottom = paddingBottom + systemBars.bottom
+            )
+            insets
+        }
 
         backButton = findViewById(R.id.back_button)
         albumCover = findViewById(R.id.album_cover)
@@ -64,7 +85,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         playButton.isEnabled = false
 
         val trackJson = intent.getStringExtra(EXTRA_TRACK)
-        val track = Gson().fromJson(trackJson, Track::class.java)
+        val track = Creator.provideGson().fromJson(trackJson, Track::class.java)
 
         bind(track)
         preparePlayer(track.previewUrl)
