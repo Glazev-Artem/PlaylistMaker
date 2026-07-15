@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/settingsBackgroundColor"
@@ -53,6 +54,7 @@
             android:hint="@string/search_hint"
             android:imeOptions="actionDone"
             android:singleLine="true"
+            android:textCursorDrawable="@drawable/cursor_blue"
             android:textColor="?attr/searchFieldTextColor"
             android:textColorHint="?attr/searchFieldHintColor"
             android:textSize="@dimen/text_size" />

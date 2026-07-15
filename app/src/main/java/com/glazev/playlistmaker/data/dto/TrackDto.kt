@@ -1,6 +1,6 @@
-package com.glazev.playlistmaker
+package com.glazev.playlistmaker.data.dto
 
-data class Track(
+data class TrackDto(
     val trackId: Long,
     val trackName: String?,
     val artistName: String?,
@@ -11,6 +11,4 @@ data class Track(
     val primaryGenreName: String?,
     val country: String?,
     val previewUrl: String?
-) {
-    fun getCoverArtwork() = artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg")
-}
+)
