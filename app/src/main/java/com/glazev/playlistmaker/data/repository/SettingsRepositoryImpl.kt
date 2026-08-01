@@ -1,6 +1,7 @@
 package com.glazev.playlistmaker.data.repository
 
 import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatDelegate
 import com.glazev.playlistmaker.domain.api.SettingsRepository
 import com.glazev.playlistmaker.domain.models.ThemeSettings
 
@@ -17,5 +18,12 @@ class SettingsRepositoryImpl(private val sharedPrefs: SharedPreferences) : Setti
         sharedPrefs.edit()
             .putBoolean(DARK_THEME_KEY, settings.darkTheme)
             .apply()
+        AppCompatDelegate.setDefaultNightMode(
+            if (settings.darkTheme) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
     }
 }
