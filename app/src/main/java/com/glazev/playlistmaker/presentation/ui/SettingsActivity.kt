@@ -1,7 +1,5 @@
 package com.glazev.playlistmaker.presentation.ui
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
@@ -11,12 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import com.glazev.playlistmaker.R
 import com.glazev.playlistmaker.creator.Creator
-import com.glazev.playlistmaker.domain.models.ThemeSettings
+import com.glazev.playlistmaker.presentation.viewmodel.SettingsViewModel
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var viewModel: SettingsViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,7 +41,10 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val settingsInteractor = Creator.provideSettingsInteractor(this)
+        viewModel = ViewModelProvider(
+            this,
+            Creator.provideSettingsViewModelFactory(this)
+        )[SettingsViewModel::class.java]
 
         val backButton = findViewById<ImageView>(R.id.back_button)
         backButton.setOnClickListener {
@@ -47,37 +52,29 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-        val themeSettings = settingsInteractor.getThemeSettings()
-        themeSwitcher.isChecked = themeSettings.darkTheme
+        viewModel.screenState.observe(this) { state ->
+            if (themeSwitcher.isChecked != state.isDarkThemeEnabled) {
+                themeSwitcher.isChecked = state.isDarkThemeEnabled
+            }
+        }
 
         themeSwitcher.setOnCheckedChangeListener { _, checked ->
-            settingsInteractor.updateThemeSettings(ThemeSettings(checked))
+            viewModel.onThemeChanged(checked)
         }
 
         val shareButton = findViewById<FrameLayout>(R.id.share_button)
         shareButton.setOnClickListener {
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_app_link))
-            }
-            startActivity(Intent.createChooser(shareIntent, null))
+            viewModel.onShareClicked()
         }
 
         val supportButton = findViewById<FrameLayout>(R.id.support_button)
         supportButton.setOnClickListener {
-            val supportIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_subject))
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.support_body))
-            }
-            startActivity(supportIntent)
+            viewModel.onSupportClicked()
         }
 
         val agreementButton = findViewById<FrameLayout>(R.id.agreement_button)
         agreementButton.setOnClickListener {
-            val agreementIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.agreement_link)))
-            startActivity(agreementIntent)
+            viewModel.onAgreementClicked()
         }
     }
 }
