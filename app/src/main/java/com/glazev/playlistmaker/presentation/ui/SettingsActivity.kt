@@ -9,15 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.glazev.playlistmaker.R
-import com.glazev.playlistmaker.creator.Creator
 import com.glazev.playlistmaker.presentation.viewmodel.SettingsViewModel
 import com.google.android.material.switchmaterial.SwitchMaterial
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +39,6 @@ class SettingsActivity : AppCompatActivity() {
             )
             insets
         }
-
-        viewModel = ViewModelProvider(
-            this,
-            Creator.provideSettingsViewModelFactory(this)
-        )[SettingsViewModel::class.java]
 
         val backButton = findViewById<ImageView>(R.id.back_button)
         backButton.setOnClickListener {
