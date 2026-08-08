@@ -10,8 +10,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.glazev.playlistmaker.R
+import com.glazev.playlistmaker.presentation.models.MainDestination
+import com.glazev.playlistmaker.presentation.viewmodel.MainViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: MainViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,17 +45,30 @@ class MainActivity : AppCompatActivity() {
 
         val searchButton = findViewById<Button>(R.id.button_search)
         searchButton.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
+            viewModel.onSearchClicked()
         }
 
         val libraryButton = findViewById<Button>(R.id.button_library)
         libraryButton.setOnClickListener {
-            startActivity(Intent(this, LibraryActivity::class.java))
+            viewModel.onLibraryClicked()
         }
 
         val settingsButton = findViewById<Button>(R.id.button_settings)
         settingsButton.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            viewModel.onSettingsClicked()
         }
+
+        viewModel.navigationEvent.observe(this) { event ->
+            event.getContentIfNotHandled()?.let(::navigateTo)
+        }
+    }
+
+    private fun navigateTo(destination: MainDestination) {
+        val destinationClass = when (destination) {
+            MainDestination.SEARCH -> SearchActivity::class.java
+            MainDestination.LIBRARY -> LibraryActivity::class.java
+            MainDestination.SETTINGS -> SettingsActivity::class.java
+        }
+        startActivity(Intent(this, destinationClass))
     }
 }

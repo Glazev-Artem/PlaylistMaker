@@ -11,21 +11,25 @@ import androidx.constraintlayout.widget.Group
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.glazev.playlistmaker.R
-import com.glazev.playlistmaker.creator.Creator
 import com.glazev.playlistmaker.domain.models.Track
 import com.glazev.playlistmaker.presentation.models.PlayerScreenState
 import com.glazev.playlistmaker.presentation.viewmodel.AudioPlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AudioPlayerActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: AudioPlayerViewModel
+    private lateinit var trackForViewModel: Track
+    private val viewModel: AudioPlayerViewModel by viewModel {
+        parametersOf(trackForViewModel)
+    }
+    private var isViewModelInitialized = false
 
     private lateinit var albumCover: ImageView
     private lateinit var trackName: TextView
@@ -49,6 +53,7 @@ class AudioPlayerActivity : AppCompatActivity() {
             finish()
             return
         }
+        trackForViewModel = track
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_audio_player)
@@ -56,26 +61,24 @@ class AudioPlayerActivity : AppCompatActivity() {
         applyWindowInsets()
         bindViews()
 
-        viewModel = ViewModelProvider(
-            this,
-            Creator.provideAudioPlayerViewModelFactory(track)
-        )[AudioPlayerViewModel::class.java]
+        val playerViewModel = viewModel
+        isViewModelInitialized = true
 
         findViewById<ImageView>(R.id.back_button).setOnClickListener {
             finish()
         }
         playButton.setOnClickListener {
-            viewModel.onPlaybackControlClicked()
+            playerViewModel.onPlaybackControlClicked()
         }
 
-        viewModel.screenState.observe(this) { state ->
+        playerViewModel.screenState.observe(this) { state ->
             render(state)
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (::viewModel.isInitialized) {
+        if (isViewModelInitialized) {
             viewModel.onScreenPaused()
         }
     }

@@ -19,18 +19,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.glazev.playlistmaker.R
-import com.glazev.playlistmaker.creator.Creator
 import com.glazev.playlistmaker.domain.models.Track
 import com.glazev.playlistmaker.presentation.models.SearchScreenContent
 import com.glazev.playlistmaker.presentation.models.SearchScreenState
 import com.glazev.playlistmaker.presentation.viewmodel.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
 
     private val tracks = mutableListOf<Track>()
     private val trackAdapter = TrackAdapter(tracks) { viewModel.onTrackClicked(it) }
@@ -53,11 +52,6 @@ class SearchActivity : AppCompatActivity() {
 
         applyWindowInsets()
         bindViews()
-
-        viewModel = ViewModelProvider(
-            this,
-            Creator.provideSearchViewModelFactory(this)
-        )[SearchViewModel::class.java]
 
         recyclerView.adapter = trackAdapter
         findViewById<RecyclerView>(R.id.history_recycler_view).adapter = historyAdapter
