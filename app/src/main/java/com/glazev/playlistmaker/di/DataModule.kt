@@ -50,15 +50,15 @@ val dataModule = module {
         ExternalNavigatorImpl(androidContext())
     }
 
-    single(named(SHARE_APP_LINK_QUALIFIER)) {
+    factory(named(SHARE_APP_LINK_QUALIFIER)) {
         androidContext().getString(R.string.share_app_link)
     }
 
-    single(named(TERMS_LINK_QUALIFIER)) {
+    factory(named(TERMS_LINK_QUALIFIER)) {
         androidContext().getString(R.string.agreement_link)
     }
 
-    single {
+    factory {
         EmailData(
             email = androidContext().getString(R.string.support_email),
             subject = androidContext().getString(R.string.support_subject),
