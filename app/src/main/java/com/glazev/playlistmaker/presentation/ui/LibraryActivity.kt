@@ -7,7 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.viewpager2.widget.ViewPager2
 import com.glazev.playlistmaker.R
+import com.glazev.playlistmaker.presentation.ui.library.LibraryPagerAdapter
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class LibraryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,5 +35,26 @@ class LibraryActivity : AppCompatActivity() {
             )
             insets
         }
+
+        findViewById<View>(R.id.back_button).setOnClickListener {
+            finish()
+        }
+
+        val viewPager = findViewById<ViewPager2>(R.id.library_view_pager)
+        viewPager.adapter = LibraryPagerAdapter(this)
+
+        if (savedInstanceState == null) {
+            viewPager.setCurrentItem(LibraryPagerAdapter.FAVORITE_TRACKS_POSITION, false)
+        }
+
+        val tabs = findViewById<TabLayout>(R.id.library_tabs)
+        TabLayoutMediator(tabs, viewPager) { tab, position ->
+            tab.text = getString(
+                when (position) {
+                    LibraryPagerAdapter.FAVORITE_TRACKS_POSITION -> R.string.library_favorite_tracks
+                    else -> R.string.library_playlists
+                }
+            )
+        }.attach()
     }
 }

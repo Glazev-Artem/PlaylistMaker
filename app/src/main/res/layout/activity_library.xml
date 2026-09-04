@@ -1,17 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/library_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:gravity="center"
+    android:background="?attr/settingsBackgroundColor"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Library Screen"
-        android:textColor="@color/black"
-        android:textSize="24sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@null"
+            android:padding="12dp"
+            android:src="@drawable/ic_arrow_back_24"
+            app:tint="?attr/settingsHeaderTextColor" />
+
+        <TextView
+            style="@style/HeaderTextStyle"
+            android:layout_gravity="center_vertical"
+            android:text="@string/header_library"
+            android:textColor="?attr/settingsHeaderTextColor" />
+
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/library_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="?attr/settingsBackgroundColor"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="?attr/settingsHeaderTextColor"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorHeight="2dp"
+        app:tabMode="fixed"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabSelectedTextColor="?attr/settingsHeaderTextColor"
+        app:tabTextAppearance="@style/LibraryTabTextAppearance"
+        app:tabTextColor="?attr/settingsHeaderTextColor" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/library_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </LinearLayout>
