@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/settingsBackgroundColor">
+
+    <ImageView
+        android:id="@+id/empty_favorite_tracks_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="106dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_library_placeholder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:gravity="center"
+        android:text="@string/library_empty_favorite_tracks"
+        android:textColor="?attr/settingsHeaderTextColor"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/empty_favorite_tracks_image" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
