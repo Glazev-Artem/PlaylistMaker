@@ -26,6 +26,10 @@
     <fragment
         android:id="@+id/audioPlayerFragment"
         android:name="com.glazev.playlistmaker.presentation.ui.AudioPlayerFragment"
-        android:label="@string/audio_player" />
+        android:label="@string/audio_player">
+        <argument
+            android:name="track"
+            app:argType="com.glazev.playlistmaker.domain.models.Track" />
+    </fragment>
 
 </navigation>

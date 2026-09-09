@@ -15,6 +15,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
+    private val bottomNavigationDestinations = setOf(
+        R.id.searchFragment,
+        R.id.libraryFragment,
+        R.id.settingsFragment
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -44,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigation.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            bottomNavigation.isVisible = destination.id != R.id.audioPlayerFragment
+            bottomNavigation.isVisible = destination.id in bottomNavigationDestinations
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.glazev.playlistmaker.presentation.ui
 
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -9,6 +8,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -23,9 +23,8 @@ import java.util.Locale
 
 class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
-    private val track: Track by lazy(LazyThreadSafetyMode.NONE) {
-        requireNotNull(getTrackFromArguments()) { "Track argument is required" }
-    }
+    private val args: AudioPlayerFragmentArgs by navArgs()
+    private val track: Track by lazy(LazyThreadSafetyMode.NONE) { args.track }
 
     private val viewModel: AudioPlayerViewModel by viewModel {
         parametersOf(track)
@@ -116,15 +115,6 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
             .into(rootView.findViewById(R.id.album_cover))
     }
 
-    private fun getTrackFromArguments(): Track? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getSerializable(ARG_TRACK, Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            arguments?.getSerializable(ARG_TRACK) as? Track
-        }
-    }
-
     private fun getDrawableResId(attrId: Int): Int {
         val typedValue = TypedValue()
         requireContext().theme.resolveAttribute(attrId, typedValue, true)
@@ -140,7 +130,6 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
     }
 
     companion object {
-        const val ARG_TRACK = "track"
         private const val YEAR_LENGTH = 4
         private const val ALBUM_COVER_CORNER_RADIUS_DP = 8f
     }

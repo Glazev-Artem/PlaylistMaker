@@ -26,6 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val viewModel: SearchViewModel by viewModel()
+    private var searchViews: SearchViews? = null
 
     private val tracks = mutableListOf<Track>()
     private val trackAdapter = TrackAdapter(tracks) { viewModel.onTrackClicked(it) }
@@ -36,41 +37,52 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val inputEditText = view.findViewById<EditText>(R.id.input_edit_text)
-        val clearButton = view.findViewById<ImageView>(R.id.clear_icon)
+        val views = SearchViews(
+            inputEditText = view.findViewById(R.id.input_edit_text),
+            clearButton = view.findViewById(R.id.clear_icon),
+            recyclerView = view.findViewById(R.id.recyclerView),
+            historyRecyclerView = view.findViewById(R.id.history_recycler_view),
+            refreshButton = view.findViewById(R.id.refresh_button),
+            clearHistoryButton = view.findViewById(R.id.clear_history_button),
+            placeholderNothingFound = view.findViewById(R.id.placeholder_nothing_found),
+            placeholderError = view.findViewById(R.id.placeholder_error),
+            historyLayout = view.findViewById(R.id.history_layout),
+            progressBar = view.findViewById(R.id.progressBar)
+        )
+        searchViews = views
 
-        view.findViewById<RecyclerView>(R.id.recyclerView).adapter = trackAdapter
-        view.findViewById<RecyclerView>(R.id.history_recycler_view).adapter = historyAdapter
+        views.recyclerView.adapter = trackAdapter
+        views.historyRecyclerView.adapter = historyAdapter
 
-        clearButton.setOnClickListener {
-            inputEditText.setText("")
+        views.clearButton.setOnClickListener {
+            views.inputEditText.setText("")
             val inputMethodManager = requireContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+            inputMethodManager?.hideSoftInputFromWindow(views.inputEditText.windowToken, 0)
         }
 
-        view.findViewById<Button>(R.id.refresh_button).setOnClickListener {
-            viewModel.onSearchRequested(inputEditText.text.toString())
+        views.refreshButton.setOnClickListener {
+            viewModel.onSearchRequested(views.inputEditText.text.toString())
         }
 
-        view.findViewById<Button>(R.id.clear_history_button).setOnClickListener {
+        views.clearHistoryButton.setOnClickListener {
             viewModel.onHistoryClearClicked()
         }
 
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+        views.inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel.onSearchRequested(inputEditText.text.toString())
+                viewModel.onSearchRequested(views.inputEditText.text.toString())
                 true
             } else {
                 false
             }
         }
 
-        inputEditText.setOnFocusChangeListener { _, hasFocus ->
+        views.inputEditText.setOnFocusChangeListener { _, hasFocus ->
             viewModel.onFocusChanged(hasFocus)
         }
 
-        inputEditText.addTextChangedListener(object : TextWatcher {
+        views.inputEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 text: CharSequence?,
                 start: Int,
@@ -91,7 +103,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         })
 
         viewModel.screenState.observe(viewLifecycleOwner) { state ->
-            render(view, state)
+            render(state)
         }
 
         viewModel.openPlayerEvent.observe(viewLifecycleOwner) { event ->
@@ -102,46 +114,41 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     override fun onDestroyView() {
-        view?.findViewById<RecyclerView>(R.id.recyclerView)?.adapter = null
-        view?.findViewById<RecyclerView>(R.id.history_recycler_view)?.adapter = null
+        searchViews?.recyclerView?.adapter = null
+        searchViews?.historyRecyclerView?.adapter = null
+        searchViews = null
         super.onDestroyView()
     }
 
-    private fun render(rootView: View, state: SearchScreenState) {
-        val clearButton = rootView.findViewById<ImageView>(R.id.clear_icon)
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
-        val placeholderNothingFound = rootView
-            .findViewById<LinearLayout>(R.id.placeholder_nothing_found)
-        val placeholderError = rootView.findViewById<LinearLayout>(R.id.placeholder_error)
-        val historyLayout = rootView.findViewById<ScrollView>(R.id.history_layout)
-        val progressBar = rootView.findViewById<ProgressBar>(R.id.progressBar)
+    private fun render(state: SearchScreenState) {
+        val views = searchViews ?: return
 
-        clearButton.visibility = state.isClearButtonVisible.toVisibility()
+        views.clearButton.visibility = state.isClearButtonVisible.toVisibility()
 
-        recyclerView.visibility = View.GONE
-        placeholderNothingFound.visibility = View.GONE
-        placeholderError.visibility = View.GONE
-        historyLayout.visibility = View.GONE
-        progressBar.visibility = View.GONE
+        views.recyclerView.visibility = View.GONE
+        views.placeholderNothingFound.visibility = View.GONE
+        views.placeholderError.visibility = View.GONE
+        views.historyLayout.visibility = View.GONE
+        views.progressBar.visibility = View.GONE
 
         when (val content = state.content) {
             SearchScreenContent.Idle -> Unit
-            SearchScreenContent.Loading -> progressBar.visibility = View.VISIBLE
+            SearchScreenContent.Loading -> views.progressBar.visibility = View.VISIBLE
             is SearchScreenContent.Results -> {
                 updateTracks(tracks, content.tracks, trackAdapter)
-                recyclerView.visibility = View.VISIBLE
+                views.recyclerView.visibility = View.VISIBLE
             }
             SearchScreenContent.NothingFound -> {
                 updateTracks(tracks, emptyList(), trackAdapter)
-                placeholderNothingFound.visibility = View.VISIBLE
+                views.placeholderNothingFound.visibility = View.VISIBLE
             }
             SearchScreenContent.Error -> {
                 updateTracks(tracks, emptyList(), trackAdapter)
-                placeholderError.visibility = View.VISIBLE
+                views.placeholderError.visibility = View.VISIBLE
             }
             is SearchScreenContent.History -> {
                 updateTracks(historyTracks, content.tracks, historyAdapter)
-                historyLayout.visibility = View.VISIBLE
+                views.historyLayout.visibility = View.VISIBLE
             }
         }
     }
@@ -157,14 +164,23 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
     }
 
     private fun openPlayer(track: Track) {
-        val arguments = Bundle().apply {
-            putSerializable(AudioPlayerFragment.ARG_TRACK, track)
-        }
-        findNavController().navigate(
-            R.id.action_searchFragment_to_audioPlayerFragment,
-            arguments
-        )
+        val action = SearchFragmentDirections
+            .actionSearchFragmentToAudioPlayerFragment(track)
+        findNavController().navigate(action)
     }
 
     private fun Boolean.toVisibility(): Int = if (this) View.VISIBLE else View.GONE
+
+    private data class SearchViews(
+        val inputEditText: EditText,
+        val clearButton: ImageView,
+        val recyclerView: RecyclerView,
+        val historyRecyclerView: RecyclerView,
+        val refreshButton: Button,
+        val clearHistoryButton: Button,
+        val placeholderNothingFound: LinearLayout,
+        val placeholderError: LinearLayout,
+        val historyLayout: ScrollView,
+        val progressBar: ProgressBar
+    )
 }
