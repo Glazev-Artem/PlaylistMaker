@@ -5,8 +5,8 @@
     android:id="@+id/player_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="?attr/settingsBackgroundColor">
+    android:background="?attr/settingsBackgroundColor"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,6 +17,7 @@
             android:id="@+id/back_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:contentDescription="@null"
             android:padding="12dp"
             android:src="@drawable/ic_arrow_back_24"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,6 +31,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="38dp"
             android:layout_marginEnd="24dp"
+            android:contentDescription="@null"
             android:scaleType="centerCrop"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -74,6 +76,7 @@
             android:layout_width="51dp"
             android:layout_height="51dp"
             android:layout_marginStart="24dp"
+            android:contentDescription="@null"
             android:src="@drawable/button_add_playlist"
             app:layout_constraintBottom_toBottomOf="@id/play_button"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +87,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="58dp"
+            android:contentDescription="@null"
             android:src="?attr/playButtonDrawable"
             app:layout_constraintEnd_toStartOf="@id/like_button"
             app:layout_constraintStart_toEndOf="@id/add_button"
@@ -94,6 +98,7 @@
             android:layout_width="51dp"
             android:layout_height="51dp"
             android:layout_marginEnd="24dp"
+            android:contentDescription="@null"
             android:src="@drawable/button__dislike"
             app:layout_constraintBottom_toBottomOf="@id/play_button"
             app:layout_constraintEnd_toEndOf="parent"

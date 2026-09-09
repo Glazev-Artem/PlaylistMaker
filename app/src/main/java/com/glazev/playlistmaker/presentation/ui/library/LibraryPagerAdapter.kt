@@ -1,10 +1,9 @@
 package com.glazev.playlistmaker.presentation.ui.library
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class LibraryPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+class LibraryPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = PAGE_COUNT
 

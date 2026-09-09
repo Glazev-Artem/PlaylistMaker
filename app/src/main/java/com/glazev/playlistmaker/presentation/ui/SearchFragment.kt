@@ -1,7 +1,6 @@
 package com.glazev.playlistmaker.presentation.ui
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,11 +13,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.glazev.playlistmaker.R
 import com.glazev.playlistmaker.domain.models.Track
@@ -27,7 +23,7 @@ import com.glazev.playlistmaker.presentation.models.SearchScreenState
 import com.glazev.playlistmaker.presentation.viewmodel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val viewModel: SearchViewModel by viewModel()
 
@@ -37,84 +33,30 @@ class SearchActivity : AppCompatActivity() {
     private val historyTracks = mutableListOf<Track>()
     private val historyAdapter = TrackAdapter(historyTracks) { viewModel.onTrackClicked(it) }
 
-    private lateinit var inputEditText: EditText
-    private lateinit var clearButton: ImageView
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var placeholderNothingFound: LinearLayout
-    private lateinit var placeholderError: LinearLayout
-    private lateinit var historyLayout: ScrollView
-    private lateinit var progressBar: ProgressBar
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_search)
+        val inputEditText = view.findViewById<EditText>(R.id.input_edit_text)
+        val clearButton = view.findViewById<ImageView>(R.id.clear_icon)
 
-        applyWindowInsets()
-        bindViews()
-
-        recyclerView.adapter = trackAdapter
-        findViewById<RecyclerView>(R.id.history_recycler_view).adapter = historyAdapter
-
-        setClickListeners()
-        setInputListeners()
-        observeViewModel()
-
-        // История должна быть видна сразу при открытии экрана с пустым запросом.
-        viewModel.onFocusChanged(true)
-    }
-
-    private fun applyWindowInsets() {
-        val searchRoot = findViewById<View>(R.id.search_root)
-        val paddingLeft = searchRoot.paddingLeft
-        val paddingTop = searchRoot.paddingTop
-        val paddingRight = searchRoot.paddingRight
-        val paddingBottom = searchRoot.paddingBottom
-
-        ViewCompat.setOnApplyWindowInsetsListener(searchRoot) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(
-                left = paddingLeft + systemBars.left,
-                top = paddingTop + systemBars.top,
-                right = paddingRight + systemBars.right,
-                bottom = paddingBottom + systemBars.bottom
-            )
-            insets
-        }
-    }
-
-    private fun bindViews() {
-        inputEditText = findViewById(R.id.input_edit_text)
-        clearButton = findViewById(R.id.clear_icon)
-        recyclerView = findViewById(R.id.recyclerView)
-        placeholderNothingFound = findViewById(R.id.placeholder_nothing_found)
-        placeholderError = findViewById(R.id.placeholder_error)
-        historyLayout = findViewById(R.id.history_layout)
-        progressBar = findViewById(R.id.progressBar)
-    }
-
-    private fun setClickListeners() {
-        findViewById<ImageView>(R.id.back_button).setOnClickListener {
-            finish()
-        }
+        view.findViewById<RecyclerView>(R.id.recyclerView).adapter = trackAdapter
+        view.findViewById<RecyclerView>(R.id.history_recycler_view).adapter = historyAdapter
 
         clearButton.setOnClickListener {
             inputEditText.setText("")
-            val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = requireContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
         }
 
-        findViewById<Button>(R.id.refresh_button).setOnClickListener {
+        view.findViewById<Button>(R.id.refresh_button).setOnClickListener {
             viewModel.onSearchRequested(inputEditText.text.toString())
         }
 
-        findViewById<Button>(R.id.clear_history_button).setOnClickListener {
+        view.findViewById<Button>(R.id.clear_history_button).setOnClickListener {
             viewModel.onHistoryClearClicked()
         }
-    }
 
-    private fun setInputListeners() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.onSearchRequested(inputEditText.text.toString())
@@ -147,19 +89,33 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(text: Editable?) = Unit
         })
-    }
 
-    private fun observeViewModel() {
-        viewModel.screenState.observe(this) { state ->
-            render(state)
+        viewModel.screenState.observe(viewLifecycleOwner) { state ->
+            render(view, state)
         }
 
-        viewModel.openPlayerEvent.observe(this) { event ->
+        viewModel.openPlayerEvent.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let(::openPlayer)
         }
+
+        viewModel.onFocusChanged(true)
     }
 
-    private fun render(state: SearchScreenState) {
+    override fun onDestroyView() {
+        view?.findViewById<RecyclerView>(R.id.recyclerView)?.adapter = null
+        view?.findViewById<RecyclerView>(R.id.history_recycler_view)?.adapter = null
+        super.onDestroyView()
+    }
+
+    private fun render(rootView: View, state: SearchScreenState) {
+        val clearButton = rootView.findViewById<ImageView>(R.id.clear_icon)
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recyclerView)
+        val placeholderNothingFound = rootView
+            .findViewById<LinearLayout>(R.id.placeholder_nothing_found)
+        val placeholderError = rootView.findViewById<LinearLayout>(R.id.placeholder_error)
+        val historyLayout = rootView.findViewById<ScrollView>(R.id.history_layout)
+        val progressBar = rootView.findViewById<ProgressBar>(R.id.progressBar)
+
         clearButton.visibility = state.isClearButtonVisible.toVisibility()
 
         recyclerView.visibility = View.GONE
@@ -201,10 +157,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openPlayer(track: Track) {
-        val intent = Intent(this, AudioPlayerActivity::class.java).apply {
-            putExtra(AudioPlayerActivity.EXTRA_TRACK, track)
+        val arguments = Bundle().apply {
+            putSerializable(AudioPlayerFragment.ARG_TRACK, track)
         }
-        startActivity(intent)
+        findNavController().navigate(
+            R.id.action_searchFragment_to_audioPlayerFragment,
+            arguments
+        )
     }
 
     private fun Boolean.toVisibility(): Int = if (this) View.VISIBLE else View.GONE

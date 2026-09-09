@@ -1,32 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/settings_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/settingsBackgroundColor"
     android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
+        style="@style/HeaderTextStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/padding_16">
-
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_arrow_back_24"
-            app:tint="?attr/settingsHeaderTextColor" />
-
-        <TextView
-            style="@style/HeaderTextStyle"
-            android:layout_marginStart="@dimen/margin_24"
-            android:text="@string/header_settings"
-            android:textColor="?attr/settingsHeaderTextColor" />
-    </LinearLayout>
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:text="@string/header_settings"
+        android:textColor="?attr/settingsHeaderTextColor" />
 
     <FrameLayout
         style="@style/SettingsItemLayoutStyle"
@@ -41,11 +28,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
-            app:thumbTint="@color/switch_thumb_selector"
-            app:trackTint="@color/switch_track_selector"
             android:minWidth="0dp"
             android:minHeight="0dp"
-            android:padding="0dp" />
+            android:padding="0dp"
+            app:thumbTint="@color/switch_thumb_selector"
+            app:trackTint="@color/switch_track_selector" />
     </FrameLayout>
 
     <FrameLayout
@@ -60,6 +47,7 @@
 
         <ImageView
             style="@style/SettingsIconStyle"
+            android:contentDescription="@null"
             android:src="@drawable/ic_share_24" />
     </FrameLayout>
 
@@ -75,6 +63,7 @@
 
         <ImageView
             style="@style/SettingsIconStyle"
+            android:contentDescription="@null"
             android:src="@drawable/ic_support_24" />
     </FrameLayout>
 
@@ -90,6 +79,7 @@
 
         <ImageView
             style="@style/SettingsIconStyle"
+            android:contentDescription="@null"
             android:src="@drawable/ic_arrow_forward_24" />
     </FrameLayout>
 
