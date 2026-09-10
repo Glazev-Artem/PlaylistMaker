@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Playlist Maker</string>
-    <string name="header_main">Playlist Maker</string>
     <string name="header_settings">Настройки</string>
     <string name="button_search">Поиск</string>
     <string name="button_library">Медиатека</string>
@@ -24,6 +23,7 @@
 
     <string name="search_hint">Поиск</string>
     <string name="header_search">Поиск</string>
+    <string name="audio_player">Аудиоплеер</string>
 
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="something_went_wrong">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
