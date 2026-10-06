@@ -1,9 +1,10 @@
 package com.glazev.playlistmaker.domain.api
 
 import com.glazev.playlistmaker.domain.models.Track
+import kotlinx.coroutines.flow.Flow
 
 interface TracksRepository {
-    fun searchTracks(expression: String): Resource<List<Track>>
+    fun searchTracks(expression: String): Flow<Resource<List<Track>>>
 }
 
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {

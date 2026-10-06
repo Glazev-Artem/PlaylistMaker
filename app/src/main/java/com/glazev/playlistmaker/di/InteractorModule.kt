@@ -12,17 +12,11 @@ import com.glazev.playlistmaker.domain.impl.SharingInteractorImpl
 import com.glazev.playlistmaker.domain.impl.TracksInteractorImpl
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 val interactorModule = module {
 
-    single<ExecutorService> {
-        Executors.newCachedThreadPool()
-    }
-
     factory<TracksInteractor> {
-        TracksInteractorImpl(get(), get())
+        TracksInteractorImpl(get())
     }
 
     factory<SearchHistoryInteractor> {

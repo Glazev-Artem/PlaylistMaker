@@ -1,28 +1,30 @@
 package com.glazev.playlistmaker.presentation.viewmodel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.glazev.playlistmaker.domain.api.SearchHistoryInteractor
 import com.glazev.playlistmaker.domain.api.TracksInteractor
 import com.glazev.playlistmaker.domain.models.Track
 import com.glazev.playlistmaker.presentation.models.Event
 import com.glazev.playlistmaker.presentation.models.SearchScreenContent
 import com.glazev.playlistmaker.presentation.models.SearchScreenState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val tracksInteractor: TracksInteractor,
     private val searchHistoryInteractor: SearchHistoryInteractor
 ) : ViewModel() {
 
-    private val mainHandler = Handler(Looper.getMainLooper())
+    private var debounceJob: Job? = null
+    private var searchJob: Job? = null
     private var currentQuery = ""
     private var hasFocus = false
-    private var lastTrackClickTime = 0L
+    private var isClickAllowed = true
     private var latestRequestId = 0
-    private val searchRunnable = Runnable { search(currentQuery) }
 
     private val _screenState = MutableLiveData(SearchScreenState())
     val screenState: LiveData<SearchScreenState> = _screenState
@@ -35,13 +37,17 @@ class SearchViewModel(
 
         currentQuery = query
         latestRequestId++
-        mainHandler.removeCallbacks(searchRunnable)
+        debounceJob?.cancel()
+        searchJob?.cancel()
 
         if (query.isEmpty()) {
             showHistoryOrIdle()
         } else {
             _screenState.value = SearchScreenState(query, SearchScreenContent.Idle)
-            mainHandler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+            debounceJob = viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                search(query)
+            }
         }
     }
 
@@ -54,7 +60,7 @@ class SearchViewModel(
 
     fun onSearchRequested(query: String) {
         currentQuery = query
-        mainHandler.removeCallbacks(searchRunnable)
+        debounceJob?.cancel()
         search(query)
     }
 
@@ -64,9 +70,12 @@ class SearchViewModel(
     }
 
     fun onTrackClicked(track: Track) {
-        val clickTime = System.currentTimeMillis()
-        if (clickTime - lastTrackClickTime < CLICK_DEBOUNCE_DELAY) return
-        lastTrackClickTime = clickTime
+        if (!isClickAllowed) return
+        isClickAllowed = false
+        viewModelScope.launch {
+            delay(CLICK_DEBOUNCE_DELAY)
+            isClickAllowed = true
+        }
 
         searchHistoryInteractor.add(track)
         if (_screenState.value?.content is SearchScreenContent.History) {
@@ -76,33 +85,32 @@ class SearchViewModel(
     }
 
     private fun search(query: String) {
+        searchJob?.cancel()
+        val requestId = ++latestRequestId
         if (query.isBlank()) {
             showHistoryOrIdle()
             return
         }
 
         _screenState.value = SearchScreenState(query, SearchScreenContent.Loading)
-        val requestId = ++latestRequestId
-        tracksInteractor.searchTracks(query, object : TracksInteractor.TracksConsumer {
-            override fun consume(foundTracks: List<Track>?, errorMessage: String?) {
-                mainHandler.post {
-                    if (
-                        requestId != latestRequestId ||
-                        query != currentQuery ||
-                        currentQuery.isEmpty()
-                    ) {
-                        return@post
-                    }
-
-                    val content = when {
-                        foundTracks == null -> SearchScreenContent.Error
-                        foundTracks.isEmpty() -> SearchScreenContent.NothingFound
-                        else -> SearchScreenContent.Results(foundTracks)
-                    }
-                    _screenState.value = SearchScreenState(currentQuery, content)
+        searchJob = viewModelScope.launch {
+            tracksInteractor.searchTracks(query).collect { (foundTracks, errorMessage) ->
+                if (
+                    requestId != latestRequestId ||
+                    query != currentQuery ||
+                    currentQuery.isEmpty()
+                ) {
+                    return@collect
                 }
+
+                val content = when {
+                    errorMessage != null || foundTracks == null -> SearchScreenContent.Error
+                    foundTracks.isEmpty() -> SearchScreenContent.NothingFound
+                    else -> SearchScreenContent.Results(foundTracks)
+                }
+                _screenState.value = SearchScreenState(currentQuery, content)
             }
-        })
+        }
     }
 
     private fun showHistoryOrIdle() {
@@ -113,10 +121,6 @@ class SearchViewModel(
             SearchScreenContent.Idle
         }
         _screenState.value = SearchScreenState(currentQuery, content)
-    }
-
-    override fun onCleared() {
-        mainHandler.removeCallbacksAndMessages(null)
     }
 
     companion object {
