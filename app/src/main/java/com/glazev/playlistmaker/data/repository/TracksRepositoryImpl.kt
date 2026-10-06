@@ -6,12 +6,14 @@ import com.glazev.playlistmaker.data.dto.TracksSearchResponse
 import com.glazev.playlistmaker.domain.api.Resource
 import com.glazev.playlistmaker.domain.api.TracksRepository
 import com.glazev.playlistmaker.domain.models.Track
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
 
-    override fun searchTracks(expression: String): Resource<List<Track>> {
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TracksSearchRequest(expression))
-        return when (response.resultCode) {
+        val result = when (response.resultCode) {
             -1 -> Resource.Error("Проверьте подключение к интернету")
             200 -> {
                 // Безопасное приведение типа, чтобы не было вылета
@@ -30,5 +32,6 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
             }
             else -> Resource.Error("Ошибка сервера")
         }
+        emit(result)
     }
 }

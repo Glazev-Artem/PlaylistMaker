@@ -1,13 +1,15 @@
 package com.glazev.playlistmaker.presentation.viewmodel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.glazev.playlistmaker.domain.api.PlayerInteractor
 import com.glazev.playlistmaker.domain.models.Track
 import com.glazev.playlistmaker.presentation.models.PlayerScreenState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class AudioPlayerViewModel(
@@ -15,23 +17,11 @@ class AudioPlayerViewModel(
     track: Track
 ) : ViewModel() {
 
-    private val mainHandler = Handler(Looper.getMainLooper())
+    private var timerJob: Job? = null
     private var playerState = PlayerState.DEFAULT
 
     private val _screenState = MutableLiveData(PlayerScreenState(track))
     val screenState: LiveData<PlayerScreenState> = _screenState
-
-    private val updatePlaybackTimeRunnable = object : Runnable {
-        override fun run() {
-            if (playerState != PlayerState.PLAYING) return
-
-            updateScreenState(
-                isPlaying = true,
-                playbackTime = formatTime(playerInteractor.getCurrentPosition())
-            )
-            mainHandler.postDelayed(this, REFRESH_PLAYBACK_TIME_DELAY_MS)
-        }
-    }
 
     init {
         preparePlayer(track.previewUrl)
@@ -60,7 +50,7 @@ class AudioPlayerViewModel(
             },
             onCompletion = {
                 playerState = PlayerState.PREPARED
-                mainHandler.removeCallbacks(updatePlaybackTimeRunnable)
+                timerJob?.cancel()
                 updateScreenState(
                     isPlayButtonEnabled = true,
                     isPlaying = false,
@@ -73,8 +63,23 @@ class AudioPlayerViewModel(
     private fun startPlayer() {
         playerInteractor.startPlayer()
         playerState = PlayerState.PLAYING
-        updateScreenState(isPlaying = true)
-        mainHandler.post(updatePlaybackTimeRunnable)
+        updateScreenState(
+            isPlaying = true,
+            playbackTime = formatTime(playerInteractor.getCurrentPosition())
+        )
+        startTimer()
+    }
+
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (playerState == PlayerState.PLAYING) {
+                delay(REFRESH_PLAYBACK_TIME_DELAY_MS)
+                updateScreenState(
+                    playbackTime = formatTime(playerInteractor.getCurrentPosition())
+                )
+            }
+        }
     }
 
     private fun pausePlayer() {
@@ -82,7 +87,7 @@ class AudioPlayerViewModel(
 
         playerInteractor.pausePlayer()
         playerState = PlayerState.PAUSED
-        mainHandler.removeCallbacks(updatePlaybackTimeRunnable)
+        timerJob?.cancel()
         updateScreenState(isPlaying = false)
     }
 
@@ -111,7 +116,7 @@ class AudioPlayerViewModel(
     }
 
     override fun onCleared() {
-        mainHandler.removeCallbacksAndMessages(null)
+        timerJob?.cancel()
         playerInteractor.releasePlayer()
     }
 
