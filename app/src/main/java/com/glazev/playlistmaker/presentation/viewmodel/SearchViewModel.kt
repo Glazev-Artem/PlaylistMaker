@@ -21,6 +21,7 @@ class SearchViewModel(
 
     private var debounceJob: Job? = null
     private var searchJob: Job? = null
+    private var historyJob: Job? = null
     private var currentQuery = ""
     private var hasFocus = false
     private var isClickAllowed = true
@@ -39,6 +40,7 @@ class SearchViewModel(
         latestRequestId++
         debounceJob?.cancel()
         searchJob?.cancel()
+        historyJob?.cancel()
 
         if (query.isEmpty()) {
             showHistoryOrIdle()
@@ -86,6 +88,7 @@ class SearchViewModel(
 
     private fun search(query: String) {
         searchJob?.cancel()
+        historyJob?.cancel()
         val requestId = ++latestRequestId
         if (query.isBlank()) {
             showHistoryOrIdle()
@@ -114,13 +117,16 @@ class SearchViewModel(
     }
 
     private fun showHistoryOrIdle() {
-        val history = searchHistoryInteractor.get()
-        val content = if (hasFocus && history.isNotEmpty()) {
-            SearchScreenContent.History(history)
-        } else {
-            SearchScreenContent.Idle
+        historyJob?.cancel()
+        historyJob = viewModelScope.launch {
+            val history = searchHistoryInteractor.get()
+            val content = if (hasFocus && history.isNotEmpty()) {
+                SearchScreenContent.History(history)
+            } else {
+                SearchScreenContent.Idle
+            }
+            _screenState.value = SearchScreenState(currentQuery, content)
         }
-        _screenState.value = SearchScreenState(currentQuery, content)
     }
 
     companion object {

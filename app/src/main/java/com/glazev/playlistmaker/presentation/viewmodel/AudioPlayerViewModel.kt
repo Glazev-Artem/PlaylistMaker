@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.glazev.playlistmaker.domain.api.FavoriteTracksInteractor
 import com.glazev.playlistmaker.domain.api.PlayerInteractor
 import com.glazev.playlistmaker.domain.models.Track
 import com.glazev.playlistmaker.presentation.models.PlayerScreenState
@@ -14,17 +15,54 @@ import java.util.Locale
 
 class AudioPlayerViewModel(
     private val playerInteractor: PlayerInteractor,
+    private val favoriteTracksInteractor: FavoriteTracksInteractor,
     track: Track
 ) : ViewModel() {
 
     private var timerJob: Job? = null
     private var playerState = PlayerState.DEFAULT
+    private var isFavoriteUpdating = false
 
     private val _screenState = MutableLiveData(PlayerScreenState(track))
     val screenState: LiveData<PlayerScreenState> = _screenState
 
     init {
         preparePlayer(track.previewUrl)
+        viewModelScope.launch {
+            favoriteTracksInteractor.getFavoriteTracks().collect { tracks ->
+                val state = _screenState.value ?: return@collect
+                val isFavorite = tracks.any { it.trackId == state.track.trackId }
+                state.track.isFavorite = isFavorite
+                _screenState.value = state.copy(
+                    isFavorite = isFavorite,
+                    isFavoriteButtonEnabled = !isFavoriteUpdating
+                )
+            }
+        }
+    }
+
+    fun onFavoriteClicked() {
+        val state = _screenState.value ?: return
+        if (!state.isFavoriteButtonEnabled || isFavoriteUpdating) return
+
+        isFavoriteUpdating = true
+        _screenState.value = state.copy(isFavoriteButtonEnabled = false)
+        viewModelScope.launch {
+            try {
+                if (state.isFavorite) {
+                    favoriteTracksInteractor.remove(state.track)
+                } else {
+                    favoriteTracksInteractor.add(state.track)
+                }
+                val currentState = _screenState.value ?: return@launch
+                val isFavorite = !state.isFavorite
+                currentState.track.isFavorite = isFavorite
+                _screenState.value = currentState.copy(isFavorite = isFavorite)
+            } finally {
+                isFavoriteUpdating = false
+                _screenState.value = _screenState.value?.copy(isFavoriteButtonEnabled = true)
+            }
+        }
     }
 
     fun onPlaybackControlClicked() {

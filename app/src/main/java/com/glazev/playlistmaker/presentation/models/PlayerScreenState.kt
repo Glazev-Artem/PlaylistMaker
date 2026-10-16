@@ -6,6 +6,8 @@ data class PlayerScreenState(
     val track: Track,
     val isPlayButtonEnabled: Boolean = false,
     val isPlaying: Boolean = false,
+    val isFavorite: Boolean = track.isFavorite,
+    val isFavoriteButtonEnabled: Boolean = false,
     val playbackTime: String = INITIAL_PLAYBACK_TIME
 ) {
     companion object {

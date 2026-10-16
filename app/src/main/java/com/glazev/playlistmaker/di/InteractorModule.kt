@@ -1,10 +1,12 @@
 package com.glazev.playlistmaker.di
 
+import com.glazev.playlistmaker.domain.api.FavoriteTracksInteractor
 import com.glazev.playlistmaker.domain.api.PlayerInteractor
 import com.glazev.playlistmaker.domain.api.SearchHistoryInteractor
 import com.glazev.playlistmaker.domain.api.SettingsInteractor
 import com.glazev.playlistmaker.domain.api.SharingInteractor
 import com.glazev.playlistmaker.domain.api.TracksInteractor
+import com.glazev.playlistmaker.domain.impl.FavoriteTracksInteractorImpl
 import com.glazev.playlistmaker.domain.impl.PlayerInteractorImpl
 import com.glazev.playlistmaker.domain.impl.SearchHistoryInteractorImpl
 import com.glazev.playlistmaker.domain.impl.SettingsInteractorImpl
@@ -14,6 +16,10 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val interactorModule = module {
+
+    factory<FavoriteTracksInteractor> {
+        FavoriteTracksInteractorImpl(get())
+    }
 
     factory<TracksInteractor> {
         TracksInteractorImpl(get())

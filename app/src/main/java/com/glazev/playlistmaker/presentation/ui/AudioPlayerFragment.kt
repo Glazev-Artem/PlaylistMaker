@@ -32,19 +32,29 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
 
     private var isViewModelInitialized = false
     private var boundTrackId: Long? = null
+    private var playButton: ImageView? = null
+    private var likeButton: ImageView? = null
+    private var playbackTime: TextView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val playerViewModel = viewModel
         isViewModelInitialized = true
+        playButton = view.findViewById(R.id.play_button)
+        likeButton = view.findViewById(R.id.like_button)
+        playbackTime = view.findViewById(R.id.playback_time)
 
         view.findViewById<ImageView>(R.id.back_button).setOnClickListener {
             findNavController().popBackStack()
         }
 
-        view.findViewById<ImageView>(R.id.play_button).setOnClickListener {
+        playButton?.setOnClickListener {
             playerViewModel.onPlaybackControlClicked()
+        }
+
+        likeButton?.setOnClickListener {
+            playerViewModel.onFavoriteClicked()
         }
 
         playerViewModel.screenState.observe(viewLifecycleOwner) { state ->
@@ -59,13 +69,21 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
         }
     }
 
+    override fun onDestroyView() {
+        playButton = null
+        likeButton = null
+        playbackTime = null
+        boundTrackId = null
+        super.onDestroyView()
+    }
+
     private fun render(rootView: View, state: PlayerScreenState) {
         if (boundTrackId != state.track.trackId) {
             bindTrack(rootView, state.track)
             boundTrackId = state.track.trackId
         }
 
-        rootView.findViewById<ImageView>(R.id.play_button).apply {
+        playButton?.apply {
             isEnabled = state.isPlayButtonEnabled
             setImageResource(
                 getDrawableResId(
@@ -77,7 +95,17 @@ class AudioPlayerFragment : Fragment(R.layout.fragment_audio_player) {
                 )
             )
         }
-        rootView.findViewById<TextView>(R.id.playback_time).text = state.playbackTime
+        playbackTime?.text = state.playbackTime
+        likeButton?.apply {
+            isEnabled = state.isFavoriteButtonEnabled
+            isSelected = state.isFavorite
+            setImageResource(
+                if (state.isFavorite) R.drawable.button__like else R.drawable.button__dislike
+            )
+            contentDescription = getString(
+                if (state.isFavorite) R.string.remove_from_favorites else R.string.add_to_favorites
+            )
+        }
     }
 
     private fun bindTrack(rootView: View, track: Track) {
