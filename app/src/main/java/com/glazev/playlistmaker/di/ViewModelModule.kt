@@ -12,7 +12,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
 
     viewModel {
-        FavoriteTracksViewModel()
+        FavoriteTracksViewModel(get())
     }
 
     viewModel {
@@ -28,6 +28,6 @@ val viewModelModule = module {
     }
 
     viewModel { (track: Track) ->
-        AudioPlayerViewModel(get(), track)
+        AudioPlayerViewModel(get(), get(), track)
     }
 }

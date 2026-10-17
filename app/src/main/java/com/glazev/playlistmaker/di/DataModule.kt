@@ -3,9 +3,11 @@ package com.glazev.playlistmaker.di
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.glazev.playlistmaker.App
 import com.glazev.playlistmaker.R
 import com.glazev.playlistmaker.data.NetworkClient
+import com.glazev.playlistmaker.data.db.AppDatabase
 import com.glazev.playlistmaker.data.network.ITunesApi
 import com.glazev.playlistmaker.data.network.RetrofitNetworkClient
 import com.glazev.playlistmaker.data.sharing.ExternalNavigatorImpl
@@ -22,6 +24,11 @@ const val SHARE_APP_LINK_QUALIFIER = "share_app_link"
 const val TERMS_LINK_QUALIFIER = "terms_link"
 
 val dataModule = module {
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "playlist_maker.db")
+            .build()
+    }
 
     single<ITunesApi> {
         Retrofit.Builder()

@@ -1,6 +1,7 @@
 package com.glazev.playlistmaker.data.repository
 
 import android.content.SharedPreferences
+import com.glazev.playlistmaker.data.db.AppDatabase
 import com.glazev.playlistmaker.data.dto.TrackDto
 import com.glazev.playlistmaker.domain.api.SearchHistoryRepository
 import com.glazev.playlistmaker.domain.models.Track
@@ -9,13 +10,14 @@ import com.google.gson.reflect.TypeToken
 
 class SearchHistoryRepositoryImpl(
     private val sharedPrefs: SharedPreferences,
-    private val gson: Gson
+    private val gson: Gson,
+    private val database: AppDatabase
 ) : SearchHistoryRepository {
 
     private val SEARCH_HISTORY_KEY = "search_history_key"
 
     override fun add(track: Track) {
-        val history = get().toMutableList()
+        val history = readHistory().toMutableList()
         history.removeIf { it.trackId == track.trackId }
         history.add(0, track)
         if (history.size > 10) {
@@ -24,7 +26,14 @@ class SearchHistoryRepositoryImpl(
         save(history)
     }
 
-    override fun get(): List<Track> {
+    override suspend fun get(): List<Track> {
+        val favoriteIds = database.trackDao().getFavoriteTrackIds().toSet()
+        return readHistory().map { track ->
+            track.copy(isFavorite = track.trackId in favoriteIds)
+        }
+    }
+
+    private fun readHistory(): List<Track> {
         val json = sharedPrefs.getString(SEARCH_HISTORY_KEY, null) ?: return emptyList()
         val type = object : TypeToken<List<TrackDto>>() {}.type
         val dtos: List<TrackDto> = gson.fromJson(json, type)

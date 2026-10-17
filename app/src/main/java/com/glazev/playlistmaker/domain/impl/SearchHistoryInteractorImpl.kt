@@ -9,7 +9,7 @@ class SearchHistoryInteractorImpl(private val repository: SearchHistoryRepositor
         repository.add(track)
     }
 
-    override fun get(): List<Track> {
+    override suspend fun get(): List<Track> {
         return repository.get()
     }
 

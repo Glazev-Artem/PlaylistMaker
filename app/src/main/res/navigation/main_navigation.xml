@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.glazev.playlistmaker.presentation.ui.library.LibraryFragment"
-        android:label="@string/header_library" />
+        android:label="@string/header_library">
+        <action
+            android:id="@+id/action_libraryFragment_to_audioPlayerFragment"
+            app:destination="@id/audioPlayerFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/searchFragment"

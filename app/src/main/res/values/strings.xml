@@ -24,6 +24,8 @@
     <string name="search_hint">Поиск</string>
     <string name="header_search">Поиск</string>
     <string name="audio_player">Аудиоплеер</string>
+    <string name="add_to_favorites">Добавить в избранное</string>
+    <string name="remove_from_favorites">Удалить из избранного</string>
 
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="something_went_wrong">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
