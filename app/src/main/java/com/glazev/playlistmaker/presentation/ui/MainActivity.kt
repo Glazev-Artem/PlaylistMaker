@@ -26,6 +26,10 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
         val rootView = findViewById<View>(R.id.main)
         val paddingLeft = rootView.paddingLeft
         val paddingTop = rootView.paddingTop
@@ -34,23 +38,26 @@ class MainActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val bottomInset = if (navController.currentDestination?.id == R.id.newPlaylistFragment) {
+                maxOf(systemBars.bottom, insets.getInsets(WindowInsetsCompat.Type.ime()).bottom)
+            } else {
+                systemBars.bottom
+            }
             view.updatePadding(
                 left = paddingLeft + systemBars.left,
                 top = paddingTop + systemBars.top,
                 right = paddingRight + systemBars.right,
-                bottom = paddingBottom + systemBars.bottom
+                bottom = paddingBottom + bottomInset
             )
             WindowInsetsCompat.CONSUMED
         }
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
         bottomNavigation.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             bottomNavigation.isVisible = destination.id in bottomNavigationDestinations
+            ViewCompat.requestApplyInsets(rootView)
         }
     }
 }

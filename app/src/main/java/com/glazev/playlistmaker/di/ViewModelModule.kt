@@ -3,6 +3,7 @@ package com.glazev.playlistmaker.di
 import com.glazev.playlistmaker.domain.models.Track
 import com.glazev.playlistmaker.presentation.viewmodel.AudioPlayerViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.FavoriteTracksViewModel
+import com.glazev.playlistmaker.presentation.viewmodel.NewPlaylistViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.PlaylistsViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.SearchViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.SettingsViewModel
@@ -16,7 +17,11 @@ val viewModelModule = module {
     }
 
     viewModel {
-        PlaylistsViewModel()
+        PlaylistsViewModel(get())
+    }
+
+    viewModel {
+        NewPlaylistViewModel(get(), get())
     }
 
     viewModel {
@@ -28,6 +33,6 @@ val viewModelModule = module {
     }
 
     viewModel { (track: Track) ->
-        AudioPlayerViewModel(get(), get(), track)
+        AudioPlayerViewModel(get(), get(), get(), track)
     }
 }

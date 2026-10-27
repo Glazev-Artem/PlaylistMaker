@@ -19,4 +19,9 @@
     <dimen name="search_edit_text_height">36dp</dimen>
     <dimen name="search_edit_text_radius">8dp</dimen>
     <dimen name="search_edit_text_icon_size">16dp</dimen>
+    <dimen name="playlist_grid_gap">8dp</dimen>
+    <dimen name="playlist_grid_vertical_gap">16dp</dimen>
+    <dimen name="playlist_cover_top_margin">26dp</dimen>
+    <dimen name="playlist_name_top_margin">27dp</dimen>
+    <dimen name="playlist_sheet_peek_height">505dp</dimen>
 </resources>

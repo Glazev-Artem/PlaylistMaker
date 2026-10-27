@@ -9,6 +9,27 @@
     <string name="library_empty_favorite_tracks">Ваша медиатека пуста</string>
     <string name="library_empty_playlists">Вы не создали\nни одного плейлиста</string>
     <string name="library_new_playlist">Новый плейлист</string>
+    <string name="playlist_name_hint">Название*</string>
+    <string name="playlist_description_hint">Описание</string>
+    <string name="playlist_choose_cover">Выбрать обложку плейлиста</string>
+    <string name="playlist_create">Создать</string>
+    <string name="playlist_created">Плейлист %1$s создан</string>
+    <string name="playlist_exit_title">Завершить создание плейлиста?</string>
+    <string name="playlist_exit_message">Все несохраненные данные будут потеряны</string>
+    <string name="playlist_exit_cancel">Отмена</string>
+    <string name="playlist_exit_confirm">Завершить</string>
+    <string name="playlist_save_error">Не удалось создать плейлист. Попробуйте ещё раз</string>
+    <string name="playlist_add_title">Добавить в плейлист</string>
+    <string name="playlist_track_added">Добавлено в плейлист %1$s</string>
+    <string name="playlist_track_already_added">Трек уже добавлен в плейлист %1$s</string>
+    <string name="playlist_add_error">Не удалось добавить трек. Попробуйте ещё раз</string>
+    <string name="back">Назад</string>
+    <plurals name="playlist_track_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
     <string name="button_settings">Настройки</string>
     <string name="settings_dark_theme">Темная тема</string>
     <string name="settings_share">Поделиться приложением</string>

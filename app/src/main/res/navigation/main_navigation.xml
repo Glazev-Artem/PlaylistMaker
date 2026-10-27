@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_libraryFragment_to_audioPlayerFragment"
             app:destination="@id/audioPlayerFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
     </fragment>
 
     <fragment
@@ -31,9 +34,17 @@
         android:id="@+id/audioPlayerFragment"
         android:name="com.glazev.playlistmaker.presentation.ui.AudioPlayerFragment"
         android:label="@string/audio_player">
+        <action
+            android:id="@+id/action_audioPlayerFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
         <argument
             android:name="track"
             app:argType="com.glazev.playlistmaker.domain.models.Track" />
     </fragment>
+
+    <fragment
+        android:id="@+id/newPlaylistFragment"
+        android:name="com.glazev.playlistmaker.presentation.ui.NewPlaylistFragment"
+        android:label="@string/library_new_playlist" />
 
 </navigation>
