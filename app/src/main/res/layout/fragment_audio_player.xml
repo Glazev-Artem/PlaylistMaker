@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/player_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/settingsBackgroundColor"
-    android:fillViewport="true">
+    android:background="?attr/settingsBackgroundColor">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -206,4 +210,76 @@
             app:constraint_referenced_ids="year_label,year_value" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/playlist_sheet_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/playlists_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/playlist_bottom_sheet_background"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="@dimen/playlist_sheet_peek_height">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="50dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@null"
+            android:src="@color/playlist_sheet_handle"
+            app:shapeAppearanceOverlay="@style/RoundedCorners8" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="19sp"
+            android:letterSpacing="0"
+            android:textColor="?attr/settingsHeaderTextColor"
+            android:text="@string/playlist_add_title" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/player_new_playlist_button"
+            android:layout_width="135dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="28dp"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="?attr/settingsHeaderTextColor"
+            android:fontFamily="@font/ys_display_medium"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="8dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="6dp"
+            android:text="@string/library_new_playlist"
+            android:textAllCaps="false"
+            android:textColor="?attr/settingsBackgroundColor"
+            android:textSize="14sp"
+            android:letterSpacing="0"
+            app:cornerRadius="54dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/player_playlists_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="24dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

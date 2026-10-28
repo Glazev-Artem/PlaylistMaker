@@ -6,8 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.glazev.playlistmaker.domain.api.FavoriteTracksInteractor
 import com.glazev.playlistmaker.domain.api.PlayerInteractor
+import com.glazev.playlistmaker.domain.api.PlaylistsInteractor
+import com.glazev.playlistmaker.domain.models.Playlist
 import com.glazev.playlistmaker.domain.models.Track
+import com.glazev.playlistmaker.presentation.models.Event
+import com.glazev.playlistmaker.presentation.models.PlaylistSheetEvent
+import com.glazev.playlistmaker.presentation.models.PlaylistSheetState
 import com.glazev.playlistmaker.presentation.models.PlayerScreenState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -16,15 +22,23 @@ import java.util.Locale
 class AudioPlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val favoriteTracksInteractor: FavoriteTracksInteractor,
+    private val playlistsInteractor: PlaylistsInteractor,
     track: Track
 ) : ViewModel() {
 
     private var timerJob: Job? = null
     private var playerState = PlayerState.DEFAULT
     private var isFavoriteUpdating = false
+    private var playlistsJob: Job? = null
 
     private val _screenState = MutableLiveData(PlayerScreenState(track))
     val screenState: LiveData<PlayerScreenState> = _screenState
+
+    private val _playlistSheetState = MutableLiveData(PlaylistSheetState())
+    val playlistSheetState: LiveData<PlaylistSheetState> = _playlistSheetState
+
+    private val _playlistSheetEvents = MutableLiveData<Event<PlaylistSheetEvent>>()
+    val playlistSheetEvents: LiveData<Event<PlaylistSheetEvent>> = _playlistSheetEvents
 
     init {
         preparePlayer(track.previewUrl)
@@ -61,6 +75,53 @@ class AudioPlayerViewModel(
             } finally {
                 isFavoriteUpdating = false
                 _screenState.value = _screenState.value?.copy(isFavoriteButtonEnabled = true)
+            }
+        }
+    }
+
+    fun onAddToPlaylistClicked() {
+        _playlistSheetState.value = _playlistSheetState.value?.copy(isVisible = true)
+        playlistsJob?.cancel()
+        playlistsJob = viewModelScope.launch {
+            playlistsInteractor.getPlaylists().collect { playlists ->
+                _playlistSheetState.value = _playlistSheetState.value?.copy(playlists = playlists)
+            }
+        }
+    }
+
+    fun onPlaylistSheetHidden() {
+        _playlistSheetState.value = _playlistSheetState.value?.copy(isVisible = false)
+        playlistsJob?.cancel()
+    }
+
+    fun onNewPlaylistClicked() {
+        onPlaylistSheetHidden()
+        _playlistSheetEvents.value = Event(PlaylistSheetEvent.CreatePlaylist)
+    }
+
+    fun onPlaylistClicked(playlist: Playlist) {
+        val sheet = _playlistSheetState.value ?: return
+        val track = _screenState.value?.track ?: return
+        if (sheet.isAdding) return
+        if (track.trackId in playlist.trackIds) {
+            _playlistSheetEvents.value = Event(PlaylistSheetEvent.AlreadyAdded(playlist.name))
+            return
+        }
+        _playlistSheetState.value = sheet.copy(isAdding = true)
+        viewModelScope.launch {
+            try {
+                if (playlistsInteractor.addTrack(track, playlist.id)) {
+                    onPlaylistSheetHidden()
+                    _playlistSheetEvents.value = Event(PlaylistSheetEvent.Added(playlist.name))
+                } else {
+                    _playlistSheetEvents.value = Event(PlaylistSheetEvent.AlreadyAdded(playlist.name))
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _playlistSheetEvents.value = Event(PlaylistSheetEvent.Error)
+            } finally {
+                _playlistSheetState.value = _playlistSheetState.value?.copy(isAdding = false)
             }
         }
     }
