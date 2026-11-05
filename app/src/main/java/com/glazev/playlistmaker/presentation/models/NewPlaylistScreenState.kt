@@ -19,5 +19,6 @@ sealed interface NewPlaylistEvent {
     data object Close : NewPlaylistEvent
     data class Created(val name: String) : NewPlaylistEvent
     data object Saved : NewPlaylistEvent
+    data object LoadError : NewPlaylistEvent
     data object SaveError : NewPlaylistEvent
 }

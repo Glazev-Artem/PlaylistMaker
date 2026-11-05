@@ -42,6 +42,7 @@
     <string name="playlist_exit_message">Все несохраненные данные будут потеряны</string>
     <string name="playlist_exit_cancel">Отмена</string>
     <string name="playlist_exit_confirm">Завершить</string>
+    <string name="playlist_load_error">Не удалось загрузить плейлист</string>
     <string name="playlist_save_error">Не удалось создать плейлист. Попробуйте ещё раз</string>
     <string name="playlist_add_title">Добавить в плейлист</string>
     <string name="playlist_track_added">Добавлено в плейлист %1$s</string>

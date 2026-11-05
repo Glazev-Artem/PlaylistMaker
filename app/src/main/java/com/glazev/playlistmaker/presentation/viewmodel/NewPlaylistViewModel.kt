@@ -53,8 +53,7 @@ class NewPlaylistViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
-                _events.value = Event(NewPlaylistEvent.SaveError)
-                _events.value = Event(NewPlaylistEvent.Close)
+                _events.value = Event(NewPlaylistEvent.LoadError)
             }
         }
     }

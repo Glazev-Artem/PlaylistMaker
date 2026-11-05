@@ -89,6 +89,10 @@ class NewPlaylistFragment : Fragment(R.layout.fragment_new_playlist) {
                     Toast.makeText(context, getString(R.string.playlist_created, content.name), Toast.LENGTH_SHORT).show()
                     closeScreen()
                 }
+                NewPlaylistEvent.LoadError -> {
+                    Toast.makeText(context, R.string.playlist_load_error, Toast.LENGTH_SHORT).show()
+                    closeScreen()
+                }
                 NewPlaylistEvent.SaveError -> {
                     Toast.makeText(context, R.string.playlist_save_error, Toast.LENGTH_SHORT).show()
                 }
