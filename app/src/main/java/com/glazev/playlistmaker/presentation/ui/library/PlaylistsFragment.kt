@@ -32,7 +32,12 @@ class PlaylistsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val placeholder = view.findViewById<Group>(R.id.empty_playlists_group)
         val list = view.findViewById<RecyclerView>(R.id.playlists_grid)
-        val adapter = PlaylistGridAdapter()
+        val adapter = PlaylistGridAdapter { playlist ->
+            val controller = findNavController()
+            if (controller.currentDestination?.id == R.id.libraryFragment) {
+                controller.navigate(LibraryFragmentDirections.actionLibraryFragmentToPlaylistDetailFragment(playlist.id))
+            }
+        }
         recyclerView = list
         list.layoutManager = GridLayoutManager(requireContext(), 2)
         list.addItemDecoration(

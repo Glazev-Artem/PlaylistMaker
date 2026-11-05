@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import java.io.File
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewPlaylistFragment : Fragment(R.layout.fragment_new_playlist) {
@@ -57,7 +59,8 @@ class NewPlaylistFragment : Fragment(R.layout.fragment_new_playlist) {
             name = view.findViewById(R.id.playlist_name),
             descriptionLayout = view.findViewById(R.id.playlist_description_layout),
             description = view.findViewById(R.id.playlist_description),
-            create = view.findViewById(R.id.create_playlist_button)
+            create = view.findViewById(R.id.create_playlist_button),
+            title = view.findViewById(R.id.new_playlist_title)
         )
         views = boundViews
         boundViews.name.doAfterTextChanged { viewModel.onNameChanged(it?.toString().orEmpty()) }
@@ -81,8 +84,13 @@ class NewPlaylistFragment : Fragment(R.layout.fragment_new_playlist) {
         viewModel.events.observe(viewLifecycleOwner) { event ->
             when (val content = event.getContentIfNotHandled()) {
                 NewPlaylistEvent.Close -> closeScreen()
+                NewPlaylistEvent.Saved -> closeScreen()
                 is NewPlaylistEvent.Created -> {
                     Toast.makeText(context, getString(R.string.playlist_created, content.name), Toast.LENGTH_SHORT).show()
+                    closeScreen()
+                }
+                NewPlaylistEvent.LoadError -> {
+                    Toast.makeText(context, R.string.playlist_load_error, Toast.LENGTH_SHORT).show()
                     closeScreen()
                 }
                 NewPlaylistEvent.SaveError -> {
@@ -101,14 +109,17 @@ class NewPlaylistFragment : Fragment(R.layout.fragment_new_playlist) {
         }
         updateHintColor(boundViews.nameLayout, state.name)
         updateHintColor(boundViews.descriptionLayout, state.description)
-        boundViews.name.isEnabled = !state.isSaving
-        boundViews.description.isEnabled = !state.isSaving
-        boundViews.cover.isEnabled = !state.isSaving
+        boundViews.title.setText(if (state.isEditing) R.string.playlist_edit_title else R.string.library_new_playlist)
+        boundViews.create.setText(if (state.isEditing) R.string.playlist_save else R.string.playlist_create)
+        boundViews.name.isEnabled = !state.isSaving && !state.isLoading
+        boundViews.description.isEnabled = !state.isSaving && !state.isLoading
+        boundViews.cover.isEnabled = !state.isSaving && !state.isLoading
         boundViews.create.isEnabled = state.isCreateEnabled
-        if (displayedCover != state.coverUri) {
-            displayedCover = state.coverUri
+        val cover = state.coverUri ?: state.existingCoverPath
+        if (displayedCover != cover) {
+            displayedCover = cover
             Glide.with(this)
-                .load(state.coverUri?.let(Uri::parse))
+                .load(state.coverUri?.let(Uri::parse) ?: state.existingCoverPath?.let(::File))
                 .placeholder(R.drawable.playlist_cover_placeholder)
                 .error(R.drawable.playlist_cover_placeholder)
                 .centerCrop()
@@ -162,6 +173,7 @@ class NewPlaylistFragment : Fragment(R.layout.fragment_new_playlist) {
         val name: TextInputEditText,
         val descriptionLayout: TextInputLayout,
         val description: TextInputEditText,
-        val create: MaterialButton
+        val create: MaterialButton,
+        val title: TextView
     )
 }

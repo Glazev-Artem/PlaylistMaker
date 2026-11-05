@@ -5,12 +5,14 @@ import com.glazev.playlistmaker.presentation.viewmodel.AudioPlayerViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.FavoriteTracksViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.NewPlaylistViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.PlaylistsViewModel
+import com.glazev.playlistmaker.presentation.viewmodel.PlaylistDetailViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.SearchViewModel
 import com.glazev.playlistmaker.presentation.viewmodel.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val viewModelModule = module {
+    viewModel { (playlistId: Long) -> PlaylistDetailViewModel(get(), get(), playlistId) }
 
     viewModel {
         FavoriteTracksViewModel(get())

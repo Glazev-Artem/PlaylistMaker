@@ -13,14 +13,20 @@ import com.glazev.playlistmaker.R
 import com.glazev.playlistmaker.domain.models.Playlist
 import java.io.File
 
-class PlaylistGridAdapter : ListAdapter<Playlist, PlaylistGridViewHolder>(PlaylistDiffCallback) {
+class PlaylistGridAdapter(private val onClick: ((Playlist) -> Unit)? = null) :
+    ListAdapter<Playlist, PlaylistGridViewHolder>(PlaylistDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistGridViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_grid_item, parent, false)
         return PlaylistGridViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PlaylistGridViewHolder, position: Int) =
+    override fun onBindViewHolder(holder: PlaylistGridViewHolder, position: Int) {
         holder.bind(getItem(position))
+        holder.itemView.setOnClickListener {
+            val index = holder.bindingAdapterPosition
+            if (index != RecyclerView.NO_POSITION) onClick?.invoke(getItem(index))
+        }
+    }
 }
 
 class PlaylistGridViewHolder(view: View) : RecyclerView.ViewHolder(view) {
