@@ -1,4 +1,28 @@
 <resources>
+    <string name="playlist_title">Плейлист</string>
+    <string name="playlist_edit_title">Редактировать</string>
+    <string name="playlist_save">Сохранить</string>
+    <string name="playlist_empty_tracks">В этом плейлисте нет треков</string>
+    <string name="playlist_share">Поделиться</string>
+    <string name="playlist_more">Меню</string>
+    <string name="playlist_edit">Редактировать информацию</string>
+    <string name="playlist_delete">Удалить плейлист</string>
+    <string name="playlist_delete_message">Вы уверены, что хотите удалить этот плейлист?</string>
+    <string name="playlist_delete_cancel">Отмена</string>
+    <string name="playlist_delete_confirm">Удалить</string>
+    <string name="playlist_remove_track_message">Хотите удалить трек?</string>
+    <string name="playlist_remove_no">НЕТ</string>
+    <string name="playlist_remove_yes">ДА</string>
+    <string name="playlist_empty_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="playlist_operation_error">Не удалось выполнить действие. Попробуйте ещё раз</string>
+    <string name="playlist_share_track">%1$d. %2$s - %3$s (%4$s)</string>
+    <string name="playlist_statistics">%1$s · %2$s</string>
+    <plurals name="playlist_minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
     <string name="app_name">Playlist Maker</string>
     <string name="header_settings">Настройки</string>
     <string name="button_search">Поиск</string>

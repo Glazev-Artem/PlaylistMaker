@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_libraryFragment_to_newPlaylistFragment"
             app:destination="@id/newPlaylistFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_playlistDetailFragment"
+            app:destination="@id/playlistDetailFragment" />
     </fragment>
 
     <fragment
@@ -45,6 +48,19 @@
     <fragment
         android:id="@+id/newPlaylistFragment"
         android:name="com.glazev.playlistmaker.presentation.ui.NewPlaylistFragment"
-        android:label="@string/library_new_playlist" />
+        android:label="@string/library_new_playlist">
+        <argument android:name="playlistId" app:argType="long" android:defaultValue="-1L" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playlistDetailFragment"
+        android:name="com.glazev.playlistmaker.presentation.ui.PlaylistDetailFragment"
+        android:label="@string/playlist_title">
+        <argument android:name="playlistId" app:argType="long" />
+        <action android:id="@+id/action_playlistDetailFragment_to_audioPlayerFragment"
+            app:destination="@id/audioPlayerFragment" />
+        <action android:id="@+id/action_playlistDetailFragment_to_newPlaylistFragment"
+            app:destination="@id/newPlaylistFragment" />
+    </fragment>
 
 </navigation>
